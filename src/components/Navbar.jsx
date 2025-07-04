@@ -31,14 +31,14 @@ const Navbar = () => {
             </li>
             <li>
               <NavLink
-                to="/components/About"
+                to="/About"
                 className="border-b-2 border-transparent pb-1 hover:border-b-2 hover:border-black focus:border-b-2 focus:border-black  transition ease-in duration-300">
                 About
               </NavLink>
             </li>
             <li>
               <NavLink
-                to="/components/Contact"
+                to="/Contact"
                 className="border-b-2 border-transparent pb-1 hover:border-b-2 hover:border-black focus:border-b-2 focus:border-black transition ease-in duration-300">
                 Contact
               </NavLink>
@@ -46,19 +46,19 @@ const Navbar = () => {
           </ul>
           <div className="buttons flex items-center justify-between gap-5">
             <NavLink
-              to="/pages/auth/Login">
+              to="/Login">
               <button className="bg-black text-white border-1 border-black p-2 w-20 text-center rounded-sm hover:bg-white hover:text-black transition ease-in duration-300 cursor-pointer">
                 Login
               </button>
             </NavLink>
             <NavLink
-              to="/pages/auth/Signup">
+              to="/Signup">
               <button className="bg-black text-white border-1 border-black p-2 w-20 text-center rounded-sm hover:bg-white hover:text-black transition ease-in duration-300 cursor-pointer ">
                 Signup
               </button>
             </NavLink>
             <NavLink
-              to="/pages/admin/Administration">
+              to="/Administration">
               <button className="bg-black text-white border-1 border-black p-2 w-20 text-center rounded-sm hover:bg-white hover:text-black transition ease-in duration-300 cursor-pointer">
                 Admin
               </button>
@@ -81,7 +81,7 @@ const Navbar = () => {
             </li>
             <li>
               <NavLink
-                to="/components/About"
+                to="/About"
                 className="block hover:underline"
                 onClick={() => setMenuOpen(false)}>
                 About
@@ -89,7 +89,7 @@ const Navbar = () => {
             </li>
             <li>
               <NavLink
-                to="/components/Contact"
+                to="/Contact"
                 className="block hover:underline"
                 onClick={() => setMenuOpen(false)}>
                 Contact
@@ -98,21 +98,21 @@ const Navbar = () => {
           </ul>
 
           <div className="flex flex-col gap-3">
-            <NavLink to="/pages/auth/Login">
+            <NavLink to="/Login">
               <button
                 className="w-full bg-black text-white px-4 py-2 rounded-sm hover:bg-white hover:text-black transition"
                 onClick={() => setMenuOpen(false)}>
                 Login
               </button>
             </NavLink>
-            <NavLink to="/pages/auth/Signup">
+            <NavLink to="/Signup">
               <button
                 className="w-full bg-black text-white px-4 py-2 rounded-sm hover:bg-white hover:text-black transition"
                 onClick={() => setMenuOpen(false)}>
                 Signup
               </button>
             </NavLink>
-            <NavLink to="/pages/admin/Administration">
+            <NavLink to="/Administration">
               <button
                 className="w-full bg-black text-white px-4 py-2 rounded-sm hover:bg-white hover:text-black transition"
                 onClick={() => setMenuOpen(false)}>
