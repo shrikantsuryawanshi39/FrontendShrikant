@@ -21,15 +21,15 @@ function App() {
       <Navbar />
     <Routes>
       <Route path='/' element={<Home />} />
-      <Route path="/pages/auth/Login" element={<Login />} />
-      <Route path="/pages/auth/Signup" element={<Signup />} />
-      <Route path="/components/About" element={<About />} />
-      <Route path="/components/Contact" element={<Contact />} />
-      <Route path="/pages/admin/Administration" element={<Administration />} />
-      <Route path="/pages/admin/AddUser" element={<AddUser />} />
-      <Route path="/pages/admin/AddCluster" element={<AddCluster />} />
-      <Route path="/pages/user/UserList" element={<UserList />} />
-      <Route path="/pages/cluster/ClusterList" element={<ClusterList />} />
+      <Route path="/Login" element={<Login />} />
+      <Route path="/Signup" element={<Signup />} />
+      <Route path="/About" element={<About />} />
+      <Route path="/Contact" element={<Contact />} />
+      <Route path="/Administration" element={<Administration />} />
+      <Route path="/AddUser" element={<AddUser />} />
+      <Route path="/AddCluster" element={<AddCluster />} />
+      <Route path="/UserList" element={<UserList />} />
+      <Route path="/ClusterList" element={<ClusterList />} />
     </Routes>
       <Footer />
   </BrowserRouter>

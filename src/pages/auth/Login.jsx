@@ -22,7 +22,7 @@ const Login = () => {
     // console.log("Form submitted with data:", data);
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/auth/login",
+        "http://localhost:8080/api/login",
         {
           email: data.email,
           password: data.password,
@@ -70,7 +70,7 @@ const Login = () => {
   };
 
   return (
-    <div className="max-w-[440px] px-5 flex justify-center items-center mx-auto h-dvh text-black">
+    <div className="max-w-[440px] px-5 flex justify-center items-center mx-auto  h-screen text-black">
       {/* Login form will be displayed here =============>>>>>>>>>>>>>>>>> */}
       {showLogin && (
         <div className="w-full border border-gray-600 shadow-[0_0_15px_rgba(0,0,0,0.2)] rounded-md p-5 hover:backdrop-blur-sm transition ease-in duration-300">
@@ -150,7 +150,7 @@ const Login = () => {
             <div className="text-center mt-5 text-sm">
               Not a member?{" "}
               <NavLink
-                to="/pages/auth/Signup"
+                to="/Signup"
                 className="text-blue-600 hover:underline">
                 Signup now
               </NavLink>

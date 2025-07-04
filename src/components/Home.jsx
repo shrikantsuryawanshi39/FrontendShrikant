@@ -3,7 +3,7 @@ import { NavLink } from 'react-router';
 
 const Home = () => {
   return (
-    <div className="p-5 sm:p-8 md:p-12 flex flex-col md:flex-row gap-6 justify-center items-center text-black min-h-dvh">
+    <div className="p-5 sm:p-8 md:p-12 flex flex-col md:flex-row gap-6 justify-center items-center text-black min-h-vh">
       <div className="rounded-2xl w-full md:w-2/3 flex flex-col gap-8 justify-center items-center text-center px-4">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-snug">
           Welcome to One211 Technologies
