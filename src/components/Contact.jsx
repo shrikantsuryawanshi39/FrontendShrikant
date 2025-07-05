@@ -2,7 +2,7 @@ import React from "react";
 
 const Contact = () => {
   return (
-    <div className="p-9 flex h-vh flex-col gap-5 justify-center items-center text-black rounded-lg shadow-lg">
+    <div className="p-9 flex h-screen flex-col gap-5 justify-center items-center text-black rounded-lg shadow-lg">
       <div className="w-full shadow-[0_0_15px_rgba(0,0,0,0.1)] rounded-md p-5 hover:backdrop-blur-sm transition ease-in duration-300 flex flex-col gap-4 items-center max-w-6xl sm:max-w-6xl md:max-w-4xl lg:max-w-3xl xl:max-w-2xl">
         <h1 className="text-xl font-bold text-black sm:text-2xl md:text-3xl ">
           Contact Us

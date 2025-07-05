@@ -69,7 +69,7 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden mt-4 space-y-4 absolute top-9 right-6 w-3xs rounded-xs bg-gray-100 shadow-lg p-6 z-10">
+        <div className="md:hidden mt-4 space-y-4 absolute top-9 right-6 w-3xs rounded-md bg-white shadow-2xl p-6 z-10">
           <ul className="flex flex-col gap-3">
             <li>
               <NavLink
@@ -100,21 +100,21 @@ const Navbar = () => {
           <div className="flex flex-col gap-3">
             <NavLink to="/Login">
               <button
-                className="w-full bg-black text-white px-4 py-2 rounded-sm hover:bg-white hover:text-black transition"
+                className="bg-black text-white border-1 border-black p-2 py-1 w-full text-center rounded-sm hover:bg-white hover:text-black transition ease-in duration-300 cursor-pointer"
                 onClick={() => setMenuOpen(false)}>
                 Login
               </button>
             </NavLink>
             <NavLink to="/Signup">
               <button
-                className="w-full bg-black text-white px-4 py-2 rounded-sm hover:bg-white hover:text-black transition"
+                className="bg-black text-white border-1 border-black p-2 py-1 w-full text-center rounded-sm hover:bg-white hover:text-black transition ease-in duration-300 cursor-pointer"
                 onClick={() => setMenuOpen(false)}>
                 Signup
               </button>
             </NavLink>
             <NavLink to="/Administration">
               <button
-                className="w-full bg-black text-white px-4 py-2 rounded-sm hover:bg-white hover:text-black transition"
+                className="bg-black text-white border-1 border-black p-2 py-1 w-full text-center rounded-sm hover:bg-white hover:text-black transition ease-in duration-300 cursor-pointer"
                 onClick={() => setMenuOpen(false)}>
                 Admin
               </button>

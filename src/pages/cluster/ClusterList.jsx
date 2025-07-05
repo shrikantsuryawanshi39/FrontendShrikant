@@ -53,7 +53,7 @@ const ClusterList = () => {
 
   return (
     <div className="p-6 text-black">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-center">
         <h1 className="text-xl md:text-2xl font-bold mb-2">Cluster Details</h1>
 
         <div className="flex justify-between items-center mb-3 px-3 border-1 border-gray-600 rounded-4xl w-full max-w-3xs">
