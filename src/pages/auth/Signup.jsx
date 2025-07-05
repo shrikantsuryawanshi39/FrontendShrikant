@@ -1,9 +1,11 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { NavLink } from "react-router-dom";
+import {useNavigate, NavLink } from "react-router-dom";
 import axios from "axios";
 
 const Signup = () => {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -26,6 +28,7 @@ const Signup = () => {
     try {
       const response = await axios.post("http://localhost:8080/api/signup", payload);
       alert("Signup successful!");
+      navigate("/login");
       console.log("Response:", response.data);
       reset();
     } catch (error) {
