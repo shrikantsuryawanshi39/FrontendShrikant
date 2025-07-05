@@ -39,17 +39,17 @@ const Signup = () => {
     <div className="max-w-[440px] px-5 flex justify-center items-center mx-auto h-vh text-black">
       <div className="bg-white shadow-[0_0_15px_rgba(0,0,0,0.2)]  w-[27rem] mx-auto my-12 rounded-md border border-gray-600">
         <div className="grid grid-cols-2">
-          <div className="text-lg font-semibold pt-5 pb-2 pl-5">Sign Up</div>
+          <div className="text-lg font-semibold pt-2 pb-2 pl-5">Sign Up</div>
         </div>
         <div className="bg-[#cfd1d4] h-px mb-2 w-full" />
-        <form onSubmit={handleSubmit(onSubmit)} className="p-5 w-full">
+        <form onSubmit={handleSubmit(onSubmit)} className="px-5 py-2 w-full">
 
           {/* Fullname */}
           <div className="mb-3">
             <label htmlFor="fullname" className="block text-sm font-medium mb-1">Fullname</label>
             <input id="fullname" type="text" placeholder="Fullname"
               {...register("fullname", { required: "Fullname is required" })}
-              className="bg-gray-100 border border-gray-300 rounded-md w-full px-4 py-3 text-sm"
+              className="bg-gray-100 border border-gray-300 rounded-md w-full px-2 py-2 text-sm"
             />
             {errors.fullname && <p className="text-red-500 text-sm mt-1">{errors.fullname.message}</p>}
           </div>
@@ -65,7 +65,7 @@ const Signup = () => {
                   message: "Invalid email address",
                 },
               })}
-              className="bg-gray-100 border border-gray-300 rounded-md w-full px-4 py-3 text-sm"
+              className="bg-gray-100 border border-gray-300 rounded-md w-full px-4 py-2 text-sm"
             />
             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
           </div>
@@ -75,7 +75,7 @@ const Signup = () => {
             <label htmlFor="orgName" className="block text-sm font-medium mb-1">Organization Name</label>
             <input id="orgName" type="text" placeholder="Organization Name"
               {...register("orgName", { required: "Organization Name is required" })}
-              className="bg-gray-100 border border-gray-300 rounded-md w-full px-4 py-3 text-sm"
+              className="bg-gray-100 border border-gray-300 rounded-md w-full px-4 py-2 text-sm"
             />
             {errors.orgName && <p className="text-red-500 text-sm mt-1">{errors.orgName.message}</p>}
           </div>
@@ -101,7 +101,7 @@ const Signup = () => {
                   message: "Password must be at least 6 characters",
                 },
               })}
-              className="bg-gray-100 border border-gray-300 rounded-md w-full px-4 py-3 text-sm"
+              className="bg-gray-100 border border-gray-300 rounded-md w-full px-4 py-2 text-sm"
             />
             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
           </div>
@@ -114,7 +114,7 @@ const Signup = () => {
                 required: "Confirm Password is required",
                 validate: (value) => value === password || "Passwords do not match",
               })}
-              className="bg-gray-100 border border-gray-300 rounded-md w-full px-4 py-3 text-sm"
+              className="bg-gray-100 border border-gray-300 rounded-md w-full px-4 py-2 text-sm"
             />
             {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>}
           </div>
