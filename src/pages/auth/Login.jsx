@@ -1,36 +1,56 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 const Login = () => {
+  const [isValidated, setIsValidated] = useState(false);
+  const [orgs, setOrgs] = useState([]);
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors, isSubmitting },
-  } = useForm();
+  } = useForm({
+    shouldUnregister: false
+  });
 
-  const onSubmit = async (data) => {
+  const onValidate = async ({ email, password }) => {
+    console.log("Validating with:", email, password);
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/login",
-        {
-          email: data.email,
-          password: data.password,
-          orgId: parseInt(data.orgId),
-        },
-        { withCredentials: true }
-      );
+      const response = await axios.post("http://localhost:8080/api/user", {
+        email,
+        password,
+      });
 
-      // const { token } = response.data;
-      // localStorage.setItem("token", token);
+      setOrgs(response.data);
+      setIsValidated(true);
+      alert("Validation successful!");
+    } catch (err) {
+      console.error("Validation failed:", err);
+      alert("Invalid credentials");
+    }
+  };
+
+  const onLogin = async () => {
+    const { email, password, orgId } = getValues();
+    console.log("Logging in with:", { email, password, orgId });
+
+    try {
+      const response = await axios.post("http://localhost:8080/api/login", {
+        email,
+        password,
+        orgId,
+      });
+
+      console.log("Login response:", response.data);
       alert("Login successful!");
       navigate("/");
     } catch (err) {
       console.error("Login failed:", err);
-      alert("Invalid credentials or orgId");
+      alert("Invalid credentials");
     }
   };
 
@@ -44,81 +64,94 @@ const Login = () => {
           Please enter your details to sign in.
         </p>
 
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              placeholder="Enter your email..."
-              className="w-full border bg-gray-100 border-gray-300 rounded-md px-4 py-3 text-sm placeholder-gray-500 text-black"
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /\S+@\S+\.\S+/,
-                  message: "Email is invalid",
-                },
-              })}
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
+        <form
+          className="flex flex-col gap-4"
+          onSubmit={handleSubmit(isValidated ? onLogin : onValidate)}
+        >
+          {/* Email */}
+          {!isValidated && (
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                placeholder="Enter your email..."
+                className="w-full border bg-gray-100 border-gray-300 rounded-md px-4 py-3 text-sm placeholder-gray-500 text-black"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /\S+@\S+\.\S+/,
+                    message: "Email is invalid",
+                  },
+                })}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+              )}
+            </div>
+          )}
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              placeholder="Password"
-              className="w-full border bg-gray-100 border-gray-300 rounded-md px-4 py-3 text-sm placeholder-gray-500 text-black"
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters",
-                },
-              })}
-            />
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
+          {/* Password */}
+          {!isValidated && (
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                placeholder="Password"
+                className="w-full border bg-gray-100 border-gray-300 rounded-md px-4 py-3 text-sm placeholder-gray-500 text-black"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                })}
+              />
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+              )}
+            </div>
+          )}
 
-          <div>
-            <label htmlFor="orgId" className="block text-sm font-medium mb-1">
-              Organization ID
-            </label>
-            <input
-              type="number"
-              id="orgId"
-              placeholder="Enter your organization ID..."
-              className="w-full border bg-gray-100 border-gray-300 rounded-md px-4 py-3 text-sm placeholder-gray-500 text-black"
-              {...register("orgId", {
-                required: "Organization ID is required",
-                min: { value: 1, message: "Org ID must be positive" },
-              })}
-            />
-            {errors.orgId && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.orgId.message}
-              </p>
-            )}
-          </div>
+          {/* Organization Select */}
+          {isValidated && (
+            <div>
+              <label htmlFor="orgId" className="block text-sm font-medium mb-1">
+                Organization
+              </label>
+              <select
+                id="orgId"
+                className="w-full border bg-gray-100 border-gray-300 rounded-md px-4 py-3 text-sm text-black"
+                {...register("orgId", {
+                  required: "Organization is required",
+                  min: { value: 1, message: "Org ID must be positive" },
+                })}
+              >
+                <option value="">Select your organization</option>
+                {orgs.map((org) => (
+                  <option key={org.id} value={org.id}>
+                    {org.name}
+                  </option>
+                ))}
+              </select>
+              {errors.orgId && (
+                <p className="text-red-500 text-sm mt-1">{errors.orgId.message}</p>
+              )}
+            </div>
+          )}
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="h-[45px] bg-neutral-950 hover:bg-neutral-800 border border-gray-600 text-white text-lg font-medium rounded-md transition ease-in duration-300 cursor-pointer">
-            Login
+            className="h-[45px] bg-neutral-950 hover:bg-neutral-800 border border-gray-600 text-white text-lg font-medium rounded-md transition ease-in duration-300 cursor-pointer"
+          >
+            {isValidated ? "Login" : "Validate"}
           </button>
 
           <div className="text-center mt-5 text-sm">
