@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import Cookies from "js-cookie";
 
 const Login = () => {
   const [isValidated, setIsValidated] = useState(false);
@@ -14,20 +15,19 @@ const Login = () => {
     getValues,
     formState: { errors, isSubmitting },
   } = useForm({
-    shouldUnregister: false
+    shouldUnregister: false,
   });
 
   const onValidate = async ({ email, password }) => {
-    console.log("Validating with:", email, password);
     try {
       const response = await axios.post("http://localhost:8080/api/user", {
         email,
         password,
       });
+      console.log(response.data);
 
       setOrgs(response.data);
       setIsValidated(true);
-      alert("Validation successful!");
     } catch (err) {
       console.error("Validation failed:", err);
       alert("Invalid credentials");
@@ -36,18 +36,23 @@ const Login = () => {
 
   const onLogin = async () => {
     const { email, password, orgId } = getValues();
-    console.log("Logging in with:", { email, password, orgId });
-
     try {
-      const response = await axios.post("http://localhost:8080/api/login", {
-        email,
-        password,
-        orgId,
-      });
+      const response = await axios.post(
+        "http://localhost:8080/api/login",
+        {
+          email,
+          password,
+          orgId,
+        },
+        { withCredentials: true }
+      );
 
-      console.log("Login response:", response.data);
-      alert("Login successful!");
-      navigate("/");
+      const { token } = response.data;
+
+      Cookies.set("jwt", token, { path: "/", secure: true });
+      Cookies.set("orgId", orgId, { path: "/" });
+      // navigate("/");
+      window.location.href = "/";
     } catch (err) {
       console.error("Login failed:", err);
       alert("Invalid credentials");
@@ -66,12 +71,13 @@ const Login = () => {
 
         <form
           className="flex flex-col gap-4"
-          onSubmit={handleSubmit(isValidated ? onLogin : onValidate)}
-        >
+          onSubmit={handleSubmit(isValidated ? onLogin : onValidate)}>
           {/* Email */}
           {!isValidated && (
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium mb-1">
                 Email
               </label>
               <input
@@ -88,7 +94,9 @@ const Login = () => {
                 })}
               />
               {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.email.message}
+                </p>
               )}
             </div>
           )}
@@ -96,7 +104,9 @@ const Login = () => {
           {/* Password */}
           {!isValidated && (
             <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium mb-1">
                 Password
               </label>
               <input
@@ -113,7 +123,9 @@ const Login = () => {
                 })}
               />
               {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.password.message}
+                </p>
               )}
             </div>
           )}
@@ -121,7 +133,9 @@ const Login = () => {
           {/* Organization Select */}
           {isValidated && (
             <div>
-              <label htmlFor="orgId" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="orgId"
+                className="block text-sm font-medium mb-1">
                 Organization
               </label>
               <select
@@ -130,17 +144,21 @@ const Login = () => {
                 {...register("orgId", {
                   required: "Organization is required",
                   min: { value: 1, message: "Org ID must be positive" },
-                })}
-              >
+                })}>
                 <option value="">Select your organization</option>
                 {orgs.map((org) => (
-                  <option key={org.id} value={org.id}>
-                    {org.name}
+                  <option
+                    key={org.orgId}
+                    value={org.orgId}
+                    className="text-black">
+                    {org.orgName}
                   </option>
                 ))}
               </select>
               {errors.orgId && (
-                <p className="text-red-500 text-sm mt-1">{errors.orgId.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.orgId.message}
+                </p>
               )}
             </div>
           )}
@@ -149,14 +167,15 @@ const Login = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="h-[45px] bg-neutral-950 hover:bg-neutral-800 border border-gray-600 text-white text-lg font-medium rounded-md transition ease-in duration-300 cursor-pointer"
-          >
+            className="h-[45px] bg-neutral-950 hover:bg-neutral-800 border border-gray-600 text-white text-lg font-medium rounded-md transition ease-in duration-300 cursor-pointer">
             {isValidated ? "Login" : "Validate"}
           </button>
 
           <div className="text-center mt-5 text-sm">
             Not a member?{" "}
-            <NavLink to="/Signup" className="text-blue-600 hover:underline">
+            <NavLink
+              to="/Signup"
+              className="text-blue-600 hover:underline">
               Signup now
             </NavLink>
           </div>
