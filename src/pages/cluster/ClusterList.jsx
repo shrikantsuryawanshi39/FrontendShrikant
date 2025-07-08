@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const ClusterList = () => {
   const [allClusters, setAllClusters] = useState([]);
@@ -7,12 +9,30 @@ const ClusterList = () => {
   const [filteredClusters, setFilteredClusters] = useState([]);
   const scrollRef = useRef(null);
 
+  const orgId = Cookies.get("orgId");
+  const jwt = Cookies.get("jwt");
+
   useEffect(() => {
-    fetch("/dummyClusters.json")
-      .then((res) => res.json())
-      .then((data) => setAllClusters(data))
-      .catch((err) => console.error("Error loading clusters:", err));
-  }, []);
+    if (!orgId) {
+      return;
+    }
+    if (!jwt) {
+      return;
+    }
+
+    axios
+      .get(`http://localhost:8080/api/org/${orgId}/clusters`, {
+        headers: {
+          Authorization: jwt, // this is "Bearer <token>"
+        },
+        withCredentials: true,
+      })
+      .then((response) => setAllClusters(response.data))
+      .catch((error) => {
+        console.error("Failed to fetch clusters:", error);
+        setAllClusters([]);
+      });
+  }, [orgId]);
 
   useEffect(() => {
     const start = page * 100;
@@ -22,13 +42,11 @@ const ClusterList = () => {
       setFilteredClusters(clustersInPage);
     } else {
       const term = searchTerm.toLowerCase();
-      const result = clustersInPage.filter((cluster) => {
-        return (
-          cluster.name.toLowerCase().includes(term) ||
-          cluster.cluster_id.toString().includes(term) ||
-          cluster.org_id.toString().includes(term)
-        );
-      });
+      const result = clustersInPage.filter(
+        (cluster) =>
+          cluster.name?.toLowerCase().includes(term) ||
+          cluster.clusterId?.toString().includes(term)
+      );
       setFilteredClusters(result);
     }
   }, [searchTerm, allClusters, page]);
@@ -64,43 +82,44 @@ const ClusterList = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="border-none outline-none w-60 p-1"
           />
-          {/* <img
-            src="/src/assets/images/file-search.svg"
-            className="w-7"
-            alt="Search"
-          /> */}
         </div>
       </div>
 
       <div
         ref={scrollRef}
-        className="overflow-x-auto overflow-y-auto max-h-[462px] border border-l-0 shadow rounded-sm text-xs sm:text-sm">
-        <table className="w-[150dvw] sm:w-[100dvw] md:w-full text-xs lg:text-sm">
-          <thead className="bg-gray-300 sticky top-0">
+        className="overflow-x-auto overflow-y-auto max-h-[462px] border border-gray-300 shadow text-xs sm:text-sm">
+        <table className="w-full min-w-[900px] text-xs lg:text-sm">
+          <thead className="bg-gray-300 sticky top-0 z-10 border-1 border-t">
             <tr>
-              <th className="p-1 sm:p-2 border-x ">Cluster ID</th>
-              <th className="p-1 sm:p-2 border-x">Org ID</th>
-              <th className="p-1 sm:p-2 border-x">Name</th>
-              <th className="p-1 sm:p-2 border-x">Description</th>
-              <th className="p-1 sm:p-2 border-x">Active</th>
-              <th className="p-1 sm:p-2 border-x">Created At</th>
+              <th className="p-2 border-x">Cluster ID</th>
+              <th className="p-2 border-x">Org ID</th>
+              <th className="p-2 border-x">Name</th>
+              <th className="p-2 border-x">Description</th>
+              <th className="p-2 border-x">Active</th>
+              <th className="p-2 border-x">Created At</th>
             </tr>
           </thead>
           <tbody>
             {filteredClusters.map((cluster) => (
               <tr
-                key={cluster.cluster_id}
+                key={cluster.clusterId}
                 className="hover:bg-gray-100">
-                <td className="p-1 sm:p-2 w-25 text-center border font-semibold ">
-                  {cluster.cluster_id}
+                <td className="p-2 text-center border font-semibold">
+                  {cluster.clusterId}
                 </td>
-                <td className="p-1 sm:p-2 w-20 text-center border">{cluster.org_id}</td>
-                <td className="p-1 sm:p-2 border text-center">{cluster.name}</td>
-                <td className="p-1 sm:p-2 border text-center">{cluster.description}</td>
-                <td className="p-1 sm:p-2 w-15 text-center border">
-                  {cluster.active ? "Yes" : "No"}
+                <td className="p-2 text-center border">{cluster.orgId}</td>
+                <td className="p-2 border text-center">{cluster.name}</td>
+                <td className="p-2 border text-center">
+                  {cluster.description}
                 </td>
-                <td className="p-1 sm:p-2 border text-center">{cluster.creation_time}</td>
+                <td className="p-2 text-center border">
+                  {cluster.status ? "Yes" : "No"}
+                </td>
+                <td className="p-2 border text-center">
+                  {cluster.createdAt
+                    ? new Date(cluster.createdAt).toLocaleString()
+                    : "N/A"}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -111,13 +130,13 @@ const ClusterList = () => {
         <button
           onClick={handlePrev}
           disabled={page === 0}
-          className="bg-gray-800 hover:bg-gray-600 text-white px-4 py-1 sm:py-2 rounded disabled:opacity-50 cursor-pointer transition ease-in-out duration-300">
+          className="bg-gray-800 hover:bg-gray-600 text-white px-4 py-2 rounded disabled:opacity-50 transition duration-300">
           Previous
         </button>
         <button
           onClick={handleNext}
           disabled={(page + 1) * 100 >= allClusters.length}
-          className="bg-gray-800 hover:bg-gray-600 text-white px-4 py-1 sm:py-2 rounded disabled:opacity-50 cursor-pointer transition ease-in-out duration-300">
+          className="bg-gray-800 hover:bg-gray-600 text-white px-4 py-2 rounded disabled:opacity-50 transition duration-300">
           Next
         </button>
       </div>

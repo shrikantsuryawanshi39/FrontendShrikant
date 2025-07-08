@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const UserList = () => {
   const [allUsers, setAllUsers] = useState([]);
@@ -7,40 +9,55 @@ const UserList = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const scrollRef = useRef(null);
 
-  useEffect(() => {
-    fetch("/dummyUsers.json")
-      .then((res) => res.json())
-      .then((data) => setAllUsers(data))
-      .catch((err) => console.error("Error loading users:", err));
-  }, []);
+  const limit = 100;
 
+  const orgId = Cookies.get("orgId");
   useEffect(() => {
-    const start = page * 100;
-    const usersInPage = allUsers.slice(start, start + 100);
-
-    if (searchTerm.trim() === "") {
-      setFilteredUsers(usersInPage);
-    } else {
-      const term = searchTerm.toLowerCase();
-      const result = usersInPage.filter(
-        (user) =>
-          user.name.toLowerCase().includes(term) ||
-          user.type.toLowerCase().includes(term) ||
-          user.user_id.toString().includes(term)
-      );
-      setFilteredUsers(result);
+    if (!orgId) {
+      return;
     }
-  }, [searchTerm, allUsers, page]);
+
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/org/${orgId}/user?skip=${
+            page * limit
+          }&limit=${limit}`,
+          { withCredentials: true }
+        );
+        setAllUsers(response.data);
+      } catch (err) {
+        console.error("Error fetching users:", err);
+        alert("Could not fetch users.");
+      }
+    };
+
+    fetchUsers();
+  }, [page]);
+
+  useEffect(() => {
+    const term = searchTerm.toLowerCase();
+
+    const result = allUsers.filter(
+      (user) =>
+        user.name.toLowerCase().includes(term) ||
+        user.role.toLowerCase().includes(term) ||
+        user.email.toLowerCase().includes(term) ||
+        user.id.toString().includes(term)
+    );
+
+    setFilteredUsers(result);
+  }, [searchTerm, allUsers]);
 
   const handleNext = () => {
-    if ((page + 1) * 100 < allUsers.length) {
+    if (allUsers.length === limit) {
       setPage((prev) => prev + 1);
     }
   };
 
   const handlePrev = () => {
     if (page > 0) {
-      setPage((prev) => prev - 1);
+      (prev) => prev - 1;
     }
   };
 
@@ -55,51 +72,50 @@ const UserList = () => {
       <div className="flex flex-col sm:flex-row justify-between items-center">
         <h1 className="text-xl md:text-2xl font-bold mb-2">User Details</h1>
 
-        <div className="flex justify-between items-center mb-3 px-3 border-1 border-gray-600 rounded-4xl w-full max-w-3xs">
+        <div className="flex justify-between items-center mb-3 px-3 border border-gray-600 rounded-4xl w-full max-w-3xs">
           <input
             type="text"
-            placeholder="Search by name, type or ID..."
+            placeholder="Search by name, role, or ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="border-none outline-none w-60 p-1"
+            className="border-none outline-none w-60 p-1 bg-transparent"
           />
-          {/* <img
-            src="/src/assets/images/file-search.svg"
-            className="w-4 sm:w-5"
-            alt="Search"
-          /> */}
         </div>
       </div>
 
       <div
         ref={scrollRef}
-        className="overflow-x-auto overflow-y-auto max-h-[462px] border border-l-0 shadow rounded-sm text-xs sm:text-sm">
-        <table className="w-[150dvw] sm:w-[100dvw] md:w-full text-xs lg:text-sm">
-          <thead className="bg-gray-300 sticky top-0">
+        className="overflow-x-auto overflow-y-auto max-h-[462px] border-t shadow text-xs sm:text-sm">
+        <table className="w-[180dvw] sm:w-[120dvw] md:w-full text-xs lg:text-sm border-b">
+          <thead className="bg-gray-300 sticky top-0 z-10">
             <tr>
               <th className="p-1 sm:p-2 border-x">User ID</th>
               <th className="p-1 sm:p-2 border-x">Name</th>
               <th className="p-1 sm:p-2 border-x">Email</th>
               <th className="p-1 sm:p-2 border-x">Type</th>
-              <th className="p-1 sm:p-2 border-x w-60 sm:w-auto">Description</th>
+              <th className="p-1 sm:p-2 border-x">Description</th>
               <th className="p-1 sm:p-2 border-x">Created At</th>
             </tr>
           </thead>
           <tbody>
             {filteredUsers.map((user) => (
               <tr
-                key={user.user_id}
+                key={user.id}
                 className="hover:bg-gray-100">
                 <td className="p-1 sm:p-2 text-center border font-semibold">
-                  {user.user_id}
+                  {user.id}
                 </td>
                 <td className="p-1 sm:p-2 border text-center">{user.name}</td>
                 <td className="p-1 sm:p-2 border text-center">{user.email}</td>
                 <td className="p-1 sm:p-2 text-center border capitalize">
-                  {user.type}
+                  {user.role.toUpperCase()}
                 </td>
-                <td className="p-1 sm:p-2 border text-center max-w-xl sm:w-auto">{user.description}</td>
-                <td className="p-1 sm:p-2 border text-center w-22 lg:w-40">{user.creation_time}</td>
+                <td className="p-1 sm:p-2 border text-center">
+                  {user.description}
+                </td>
+                <td className="p-1 sm:p-2 border text-center">
+                  {new Date(user.createdAt).toLocaleString()}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -110,13 +126,13 @@ const UserList = () => {
         <button
           onClick={handlePrev}
           disabled={page === 0}
-          className="bg-gray-800 hover:bg-gray-600 text-white px-4 py-1 sm:py-2 rounded disabled:opacity-50 cursor-pointer transition ease-in-out duration-300">
+          className="bg-gray-800 hover:bg-gray-600 text-white px-4 py-1 sm:py-2 rounded disabled:opacity-50">
           Previous
         </button>
         <button
           onClick={handleNext}
-          disabled={(page + 1) * 100 >= allUsers.length}
-          className="bg-gray-800 hover:bg-gray-600 text-white px-4 py-1 sm:py-2 rounded disabled:opacity-50 cursor-pointer transition ease-in-out duration-300">
+          disabled={allUsers.length < limit}
+          className="bg-gray-800 hover:bg-gray-600 text-white px-4 py-1 sm:py-2 rounded disabled:opacity-50">
           Next
         </button>
       </div>
