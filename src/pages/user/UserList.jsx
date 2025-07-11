@@ -1,43 +1,31 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import Cookies from "js-cookie";
+import { useUserContext } from "../../context/UserContext";
 
 const UserList = () => {
+  const { getUsers } = useUserContext();
+
   const [allUsers, setAllUsers] = useState([]);
   const [page, setPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
   const scrollRef = useRef(null);
-
   const limit = 100;
 
-  const orgId = Cookies.get("orgId");
   useEffect(() => {
-    if (!orgId) {
-      return;
-    }
-
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8080/api/org/${orgId}/user?skip=${
-            page * limit
-          }&limit=${limit}`,
-          { withCredentials: true }
-        );
-        setAllUsers(response.data);
+        const users = await getUsers(page, limit);
+        setAllUsers(users);
       } catch (err) {
         console.error("Error fetching users:", err);
-        alert("Could not fetch users.");
       }
     };
 
     fetchUsers();
-  }, [page]);
+  }, [page, getUsers]);
 
   useEffect(() => {
     const term = searchTerm.toLowerCase();
-
     const result = allUsers.filter(
       (user) =>
         user.name.toLowerCase().includes(term) ||
@@ -45,9 +33,14 @@ const UserList = () => {
         user.email.toLowerCase().includes(term) ||
         user.id.toString().includes(term)
     );
-
     setFilteredUsers(result);
   }, [searchTerm, allUsers]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = 0;
+    }
+  }, [page]);
 
   const handleNext = () => {
     if (allUsers.length === limit) {
@@ -57,15 +50,9 @@ const UserList = () => {
 
   const handlePrev = () => {
     if (page > 0) {
-      (prev) => prev - 1;
+      setPage((prev) => prev - 1);
     }
   };
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = 0;
-    }
-  }, [page]);
 
   return (
     <div className="p-6 text-black">
