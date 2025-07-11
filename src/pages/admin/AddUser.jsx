@@ -1,9 +1,10 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
-import Cookies from "js-cookie";
+import { useUserContext } from "../../context/UserContext";
 
 const AddUser = () => {
+  const { formError, addUser, successMessage } = useUserContext();
+
   const {
     register,
     handleSubmit,
@@ -11,49 +12,47 @@ const AddUser = () => {
     reset,
     formState: { errors, isSubmitting },
   } = useForm();
+
   const password = watch("password");
 
-  const orgId = Cookies.get("orgId");
-  const jwt = Cookies.get("jwt");
+  // Validation & messages for form fields [Start]
+  const nameValidation = {
+    required: "Name is required",
+    minLength: { value: 8, message: "Name must be at least 8 characters" },
+  };
+  const emailValidation = {
+    required: "Email is required",
+    pattern: { value: /\S+@\S+\.\S+/, message: "Invalid email format" },
+  };
+  const typeValidation = { required: "User type is required" };
+  const passwordValidation = {
+    required: "Password is required",
+    minLength: { value: 6, message: "Password must be at least 6 characters" },
+  };
+  const confirmPasswordValidation = (password) => ({
+    required: "Confirm Password is required",
+    validate: (value) => value === password || "Passwords do not match",
+  });
+  const descriptionValidation = {
+    required: "Description is required",
+    minLength: { value: 10, message: "Min 10 characters" },
+    maxLength: { value: 100, message: "Max 100 characters" },
+  };
+  // Validation & messages for form fields [End]
+
   const onSubmit = async (data) => {
-    if (!orgId) {
-      alert("Org ID not found. Please login.");
-      return;
-    }
-
-    try {
-      const payload = {
-        name: data.name,
-        email: data.email,
-        role: data.type,
-        password: data.password,
-        description: data.description,
-        createdAt: new Date().toISOString(),
-      };
-
-      const response = await axios.post(
-        `http://localhost:8080/api/org/${orgId}/user`,
-        payload,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: jwt,
-          },
-        }
-      );
-
-      console.log(response);
-      alert("User added successfully!");
-      reset();
-    } catch (error) {
-      console.error("Error adding User:", error);
-      alert("Failed to add User.");
-    }
+    await addUser(data, reset);
   };
 
   return (
     <div className="px-4">
-      <div className="text-black flex items-center justify-center mx-auto my-10 p-5 sm:p-10 md:p-16">
+      <div className="text-black flex flex-col items-center justify-center mx-auto my-10 p-5 sm:p-10 md:p-16">
+        {/* Form Success message  */}
+        {successMessage && (
+          <p className="text-green-600 text-md m-2 text-center w-full">
+            {successMessage}
+          </p>
+        )}
         <div className="w-full max-w-md border border-gray-400 p-5 sm:p-6 rounded-lg shadow-md bg-white">
           <h1 className="text-xl sm:text-2xl font-bold mb-5 text-center">
             Add User
@@ -73,13 +72,7 @@ const AddUser = () => {
                 id="name"
                 type="text"
                 placeholder="Full Name"
-                {...register("name", {
-                  required: "Name is required",
-                  minLength: {
-                    value: 3,
-                    message: "Name must be at least 3 characters",
-                  },
-                })}
+                {...register("name", nameValidation)}
                 className="w-full p-2 border border-gray-400 rounded bg-gray-100 text-sm"
               />
               {errors.name && (
@@ -98,13 +91,7 @@ const AddUser = () => {
                 id="email"
                 type="email"
                 placeholder="Enter email"
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /\S+@\S+\.\S+/,
-                    message: "Invalid email format",
-                  },
-                })}
+                {...register("email", emailValidation)}
                 className="w-full p-2 border border-gray-400 rounded bg-gray-100 text-sm"
               />
               {errors.email && (
@@ -122,7 +109,7 @@ const AddUser = () => {
               <select
                 id="type"
                 defaultValue=""
-                {...register("type", { required: "User type is required" })}
+                {...register("type", typeValidation)}
                 className="w-full p-2 border border-gray-400 rounded bg-gray-100 text-sm">
                 <option
                   value=""
@@ -148,13 +135,7 @@ const AddUser = () => {
                 id="password"
                 type="password"
                 placeholder="Password"
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: {
-                    value: 6,
-                    message: "Password must be at least 6 characters",
-                  },
-                })}
+                {...register("password", passwordValidation)}
                 className="w-full p-2 border border-gray-400 rounded bg-gray-100 text-sm"
               />
               {errors.password && (
@@ -173,11 +154,10 @@ const AddUser = () => {
                 id="confirmPassword"
                 type="password"
                 placeholder="Confirm Password"
-                {...register("confirmPassword", {
-                  required: "Confirm Password is required",
-                  validate: (value) =>
-                    value === password || "Passwords do not match",
-                })}
+                {...register(
+                  "confirmPassword",
+                  confirmPasswordValidation(watch("password"))
+                )}
                 className="w-full p-2 border border-gray-400 rounded bg-gray-100 text-sm"
               />
               {errors.confirmPassword && (
@@ -196,17 +176,7 @@ const AddUser = () => {
                 id="description"
                 rows={3}
                 placeholder="Enter Description"
-                {...register("description", {
-                  required: "Description is required",
-                  minLength: {
-                    value: 10,
-                    message: "Description must be at least 10 characters",
-                  },
-                  maxLength: {
-                    value: 100,
-                    message: "Description cannot exceed 100 characters",
-                  },
-                })}
+                {...register("description", descriptionValidation)}
                 className="w-full p-2 border border-gray-400 rounded bg-gray-100 text-sm"></textarea>
               {errors.description && (
                 <p className="text-red-500">{errors.description.message}</p>
@@ -220,6 +190,13 @@ const AddUser = () => {
               className="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded cursor-pointer w-full transition-all duration-300">
               Add User
             </button>
+
+            {/* Form Error */}
+            {formError && (
+              <p className="text-red-500 text-sm mt-2 text-center w-full">
+                {formError}
+              </p>
+            )}
           </form>
         </div>
       </div>

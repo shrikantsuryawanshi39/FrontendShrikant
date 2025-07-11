@@ -5,16 +5,12 @@ const Footer = () => {
   return (
     <div className="w-full">
       <footer className="footer p-6 bg-[rgb(0,0,0)] text-white flex flex-col md:flex-row gap-6 md:gap-10 justify-between items-start md:items-center opacity-90">
-        
-        {/* Left */}
         <div className="left md:w-1/3 flex justify-start md:justify-center items-start md:items-center font-bold">
           <h1 className="text-2xl md:text-3xl">One211 Technologies</h1>
         </div>
-
-        {/* Divider (hidden on small screens) */}
+        
         <span className="hidden md:block w-0.5 h-24 bg-gray-500"></span>
-
-        {/* Middle (Contact Info) */}
+        
         <div className="middle flex flex-col gap-2 items-start md:w-1/3">
           <h2 className="text-xl font-bold">Contact</h2>
           <div className="text-sm">
@@ -25,10 +21,8 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Divider (hidden on small screens) */}
         <span className="hidden md:block w-0.5 h-24 bg-gray-500"></span>
 
-        {/* Right (About Links) */}
         <div className="right flex flex-col gap-2 items-start md:w-1/3">
           <h2 className="text-xl font-bold">About</h2>
           <div className="text-sm flex flex-col gap-1">

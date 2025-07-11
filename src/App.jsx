@@ -3,8 +3,8 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import Navbar from './components/Navbar'
 import Home from './components/Home'
 import Footer from './components/Footer'
-import Login from './pages/auth/Login'
-import Signup from './pages/auth/Signup'
+import Login from './pages/login/Login'
+import Signup from './pages/signup/Signup'
 import About from './components/About';
 import Contact from './components/Contact';
 import Administration from './pages/admin/Administration';
