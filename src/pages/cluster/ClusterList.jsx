@@ -16,7 +16,6 @@ const ClusterList = () => {
         const clusters = await getClusters();
         setAllClusters(clusters);
       } catch (error) {
-        console.error("Failed to fetch clusters:", error);
         setAllClusters([]);
       }
     };
