@@ -1,0 +1,18 @@
+{
+  "home": "Home",
+  "about": "About",
+  "contact": "Contact",
+  "login": "Login",
+  "signup": "Signup",
+  "logout": "Logout",
+  "profile": "Profile",
+  "email": "Email",
+  "role": "Role",
+  "org_id": "Org ID",
+  "admin": "Admin",
+  "user": "User",
+  "Home": {
+    "title": "Welcome to One211 Technologies",
+    "description": "At One211 Technologies, we design secure, scalable, and high-performance database solutions that drive efficiency and innovation. Empower your business with seamless data management, optimized architecture, and future-ready technology."
+  }
+}
