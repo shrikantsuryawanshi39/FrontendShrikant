@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
     // Validate and Login ====================>>>>>>>>>>>>>
     const validate = async ({ email, password }) => {
         try {
-            const response = await axios.post(`${API_BASE_URL}/user`, {
+            const response = await axios.post(`${API_BASE_URL}/login`, {
                 email,
                 password,
             });
@@ -22,7 +22,6 @@ export const AuthProvider = ({ children }) => {
             setCredentialsValidated(true);
             setFormError("");
         } catch (error) {
-            console.error(error)
             const msg = error.response?.data || "Invalid email or password.";
             setFormError(msg);
         }
@@ -31,8 +30,8 @@ export const AuthProvider = ({ children }) => {
     const login = async ({ email, password, orgId }) => {
         try {
             const response = await axios.post(
-                `${API_BASE_URL}/login`,
-                { email, password, orgId },
+                `${API_BASE_URL}/login/org/${orgId}`,
+                { email, password },
                 { withCredentials: true }
             );
 

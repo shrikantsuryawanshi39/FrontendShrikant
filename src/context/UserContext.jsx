@@ -45,10 +45,9 @@ export const UserProvider = ({ children }) => {
 
       setFormError("");
       setSuccessMessage("User added successfully ✅");
-       setTimeout(() => setSuccessMessage(""), 4000);
+      setTimeout(() => setSuccessMessage(""), 4000);
       reset();
     } catch (error) {
-      console.log(error)
       const msg =
         error.response?.data || "Can't add this user, Re-check email or name";
       setFormError(msg);
@@ -73,7 +72,6 @@ export const UserProvider = ({ children }) => {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching users:", error);
       throw error.response?.data || "Failed to fetch users.";
     }
   };
