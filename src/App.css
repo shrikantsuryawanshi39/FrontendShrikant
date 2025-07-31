@@ -1,14 +1,5 @@
 @import "tailwindcss";
 
-.main {
-  /* background-image: url('/src/assets/images/background.jpg'); */
-  /* background-image: url('/src/assets/images/background2.jpg'); */
-  background: white;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  min-height: 100vh;
-}
 
 body {
   overflow: scroll;
@@ -18,73 +9,11 @@ body::-webkit-scrollbar {
   display: none;
 }
 
-
-/* From Uiverse.io by kennyotsu */ 
-.card {
-  padding: 1rem 2rem;
-  border-radius: 1.25rem;
-}
-.title {
-  color: rgb(124, 124, 124);
-  font-family: "Poppins", sans-serif;
-  font-weight: 500;
-  font-size: 25px;
-  -webkit-box-sizing: content-box;
-  box-sizing: content-box;
-  height: 40px;
-  padding: 10px 15px;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  border-radius: 8px;
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
 }
 
-.words {
-  overflow: hidden;
-  position: relative;
-}
-.words::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    var(--bg-color) 10%,
-    transparent 30%,
-    transparent 70%,
-    var(--bg-color) 90%
-  );
-  z-index: 20;
-}
-
-.word {
-  display: block;
-  height: 100%;
-  padding-left: 6px;
-  color: #956afa;
-  animation: spin_4991 4s infinite;
-}
-
-.word {
-  display: block;
-  height: 100%;
-  padding-left: 6px;
-  color: #956afa;
-  animation: spin_4991 6s infinite;
-}
-@keyframes spin_4991 {
-  0%, 20% {
-    transform: translateY(0%);
-  }
-  25%, 45% {
-    transform: translateY(-100%);
-  }
-  50%, 70% {
-    transform: translateY(-200%);
-  }
-  75%, 95% {
-    transform: translateY(-300%);
-  }
-  100% {
-    transform: translateY(0%);
-  }
+.scrollbar-hidden {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }

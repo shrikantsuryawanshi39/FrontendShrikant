@@ -1,38 +1,29 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import Cookies from "js-cookie";
+import { useClusterContext } from "../../context/ClusterContext";
 
 const ClusterList = () => {
+  const { getClusters } = useClusterContext();
+  const { deleteCluster } = useClusterContext();
+
   const [allClusters, setAllClusters] = useState([]);
+  const [filteredClusters, setFilteredClusters] = useState([]);
   const [page, setPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredClusters, setFilteredClusters] = useState([]);
   const scrollRef = useRef(null);
 
-  const orgId = Cookies.get("orgId");
-  const jwt = Cookies.get("jwt");
-
   useEffect(() => {
-    if (!orgId) {
-      return;
-    }
-    if (!jwt) {
-      return;
-    }
-
-    axios
-      .get(`http://localhost:8080/api/org/${orgId}/clusters`, {
-        headers: {
-          Authorization: jwt, // this is "Bearer <token>"
-        },
-        withCredentials: true,
-      })
-      .then((response) => setAllClusters(response.data))
-      .catch((error) => {
+    const fetchClusters = async () => {
+      try {
+        const clusters = await getClusters();
+        setAllClusters(clusters);
+      } catch (error) {
         console.error("Failed to fetch clusters:", error);
         setAllClusters([]);
-      });
-  }, [orgId]);
+      }
+    };
+
+    fetchClusters();
+  }, []);
 
   useEffect(() => {
     const start = page * 100;
@@ -69,6 +60,14 @@ const ClusterList = () => {
     }
   }, [page]);
 
+  const handleDeleteCluster = async (clusterId) => {
+    if (window.confirm("Are you sure you want to delete this cluster?")) {
+      deleteCluster(clusterId);
+      const users = await getClusters();
+      setAllClusters(users);
+    }
+  }
+
   return (
     <div className="p-6 text-black">
       <div className="flex flex-col sm:flex-row justify-between items-center">
@@ -87,9 +86,9 @@ const ClusterList = () => {
 
       <div
         ref={scrollRef}
-        className="overflow-x-auto overflow-y-auto max-h-[462px] border border-gray-300 shadow text-xs sm:text-sm">
+        className="overflow-x-auto overflow-y-auto max-h-[462px] border border-l-0 shadow text-xs sm:text-sm">
         <table className="w-full min-w-[900px] text-xs lg:text-sm">
-          <thead className="bg-gray-300 sticky top-0 z-10 border-1 border-t">
+          <thead className="bg-gray-300 sticky top-0 z-10 outline-1">
             <tr>
               <th className="p-2 border-x">Cluster ID</th>
               <th className="p-2 border-x">Org ID</th>
@@ -97,6 +96,7 @@ const ClusterList = () => {
               <th className="p-2 border-x">Description</th>
               <th className="p-2 border-x">Active</th>
               <th className="p-2 border-x">Created At</th>
+              <th className="p-2 border-x">Remove</th>
             </tr>
           </thead>
           <tbody>
@@ -120,6 +120,7 @@ const ClusterList = () => {
                     ? new Date(cluster.createdAt).toLocaleString()
                     : "N/A"}
                 </td>
+                <td className="p-1 sm:p-2 border text-center"><button className="px-2 py-0.5 border w-full bg-red-200 hover:bg-red-300 hover:cursor-pointer transition duration-200" onClick={() => { handleDeleteCluster(cluster.clusterId) }}>Delete</button></td>
               </tr>
             ))}
           </tbody>

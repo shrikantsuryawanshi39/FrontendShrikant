@@ -1,53 +1,53 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
-import Cookies from "js-cookie";
+import { useClusterContext } from "../../context/ClusterContext";
 const AddCluster = () => {
+
+  const { addCluster, formError, successMessage } = useClusterContext();
+
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors, isSubmitting },
     reset,
   } = useForm();
 
-  const jwt = Cookies.get("jwt");
-  const orgId = Cookies.get("orgId");
-  
-  const onSubmit = async (data) => {
-    if(!jwt){
-      return;
-    }
-    if (!orgId) {
-      return;
-    }
-
-    try {
-      const payload = {
-        name: data.clustername,
-        description: data.description,
-        status: true,
-        createdAt: new Date().toISOString(),
-      };
-      
-      await axios.post(`http://localhost:8080/api/org/${orgId}/cluster`, payload, {
-        withCredentials: true,
-        headers: {
-          Authorization: jwt,
-        },
-      });
-
-      console.log("Cluster added:", response.data);
-      alert("Cluster added successfully!");
-      reset();
-    } catch (error) {
-      console.error("Error adding cluster:", error);
-      alert("Failed to add cluster.");
-    }
+  // Validation & messages for form fields [Start]
+  const clusterNameValidation = {
+    required: "Cluster Name is required",
+    minLength: {
+      value: 8,
+      message: "Cluster Name must be at least 8 characters",
+    },
   };
+  const descriptionValidation = {
+    required: "Description is required",
+    minLength: {
+      value: 10,
+      message: "Minimum 10 characters required",
+    },
+    maxLength: {
+      value: 100,
+      message: "Maximum 100 characters allowed",
+    },
+  };
+  // Validation & messages for form fields [End]
+
+  const onSubmit = async () => {
+    const data = getValues();
+    await addCluster(data, reset);
+  }
 
   return (
     <div className="px-4">
-      <div className="w-full h-screen max-w-3xl text-black flex items-center justify-center mx-auto my-10 p-5 sm:p-10 md:p-16">
+      <div className="w-full h-screen max-w-3xl text-black flex flex-col items-center justify-center mx-auto my-10 p-5 sm:p-10 md:p-16">
+        {/* Form Success message  */}
+        {successMessage && (
+          <p className="text-green-600 text-md m-2 text-center w-full">
+            {successMessage}
+          </p>
+        )}
         <div className="w-full sm:w-md border border-gray-400 p-5 sm:p-6 rounded-lg shadow-md bg-white">
           <h1 className="text-xl sm:text-2xl font-bold mb-5 text-center">
             Add Cluster
@@ -67,13 +67,7 @@ const AddCluster = () => {
                 id="clusterName"
                 type="text"
                 placeholder="Full Name"
-                {...register("clustername", {
-                  required: "Cluster Name is required",
-                  minLength: {
-                    value: 3,
-                    message: "Cluster Name must be at least 3 characters",
-                  },
-                })}
+                {...register("clustername", clusterNameValidation)}
                 className="w-full p-2 border border-gray-400 rounded bg-gray-100 text-sm"
               />
               {errors.clustername && (
@@ -94,17 +88,7 @@ const AddCluster = () => {
                 id="description"
                 rows={3}
                 placeholder="Enter Description"
-                {...register("description", {
-                  required: "Description is required",
-                  minLength: {
-                    value: 10,
-                    message: "Minimum 10 characters required",
-                  },
-                  maxLength: {
-                    value: 100,
-                    message: "Maximum 100 characters allowed",
-                  },
-                })}
+                {...register("description", descriptionValidation)}
                 className="w-full p-2 border border-gray-400 rounded bg-gray-100 text-sm"
               />
               {errors.description && (
@@ -121,6 +105,13 @@ const AddCluster = () => {
               className="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded cursor-pointer w-full transition-all duration-300">
               Add Cluster
             </button>
+
+            {/* Form Error */}
+            {formError && (
+              <p className="text-red-500 text-sm mt-2 text-center w-full">
+                {formError}
+              </p>
+            )}
           </form>
         </div>
       </div>
